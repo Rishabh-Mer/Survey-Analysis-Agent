@@ -44,26 +44,30 @@ template = """
     Question: {input}
 """
 
-
+# Embedding model
 embedding_model = HuggingFaceEmbeddings(model_name=embedding_model_name)
 output_parser = StrOutputParser()
 
+# Preprocessing dataframe and generating text for embedding
 df = read_file("./Sustainability Research Results.xlsx")
 cleaned_df = preprocess(df)
 text_block = generate_text_block(cleaned_df)
 print(f"Text Block: ", text_block)
 
+# Converting the text block to Document
 document = [Document(page_content=text) for text in text_block]
+# Storing data for easy retrivals
 vector_store = Chroma.from_documents(documents=document, embedding=embedding_model)
 
-
+# Prompt Template
 prompt = PromptTemplate(
     input_variables=["context", "input"],
     template=template
 )
+# Retriever to get top 5 result based on similarity
 retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={'k': 5})
 
-
+# LLM 
 llm = ChatOllama(
     model="llama3.1",
     temperature=0
@@ -72,11 +76,12 @@ llm = ChatOllama(
 entry_point_chain = RunnableParallel(
     {"context": retriever, "input": RunnablePassthrough()}
 )
-print(entry_point_chain)
 
-rag_chain = entry_point_chain | prompt | llm | output_parser
+# LLM Chain
+llm_chain = entry_point_chain | prompt | llm | output_parser
 
-add_routes(app, rag_chain, path="/analysis")
+# Langserve to return the result on specified localhost
+add_routes(app, llm_chain, path="/analysis")
 
 if __name__ == "__main__":
 
