@@ -1,6 +1,17 @@
 # Survey-Analysis-Agent
 A survey analysis agent using LLama3.1
 
+Tech Stack:
+- Python
+- FastAPI
+- Streamlit (Frontend)
+- Langchain (LLM and RAG)
+
+File Structure
+- app.py: fastapi server with langchain
+- client.py: Streamlit UI
+- data_processing.py: data preprocessing functions
+
 ### Installation
 ---
 - Create Python env
@@ -15,13 +26,17 @@ A survey analysis agent using LLama3.1
 
 ### Run Code
 
-#### Step 1:
+### Step 1:
+- Edit given ```.env``` file
+    - add huggingface api token
+
+#### Step 2:
 - Install Ollama (library to run LLM locally)
     - [link](https://ollama.com/)
 - After installation open terminal and run
     - ```ollama run llama3.2```
 
-#### Step 2:
+#### Step 3:
 - Navigate to the required folder
     - Open 2 terminals
         - run terminal 1: ```python3 app.py```
